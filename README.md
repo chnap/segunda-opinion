@@ -1,66 +1,129 @@
-# Plataforma de Segunda Opinión Oncológica
+Aquí tienes la traducción completa y optimizada de tu `README.md` al inglés:
 
-Plataforma web para la gestión de solicitudes de segunda opinión oncológica.
+```markdown
+# Oncological Second Opinion Platform
 
-## Estado del proyecto
+Web platform for managing oncological second opinion requests[cite: 1].
 
-En desarrollo
+## Project Status
 
-## Tecnologías
+In development[cite: 1]
 
-- PHP
-- JavaScript
-- HTML / CSS
-- MySQL
-- PHPMailer
-- API DriCloud
+## Technologies
 
-## Estructura
+- PHP[cite: 1]
+- JavaScript[cite: 1]
+- HTML / CSS[cite: 1]
+- MySQL[cite: 1]
+- PHPMailer[cite: 1]
+- DriCloud API[cite: 1]
 
-- `index.php` — Landing pública
-- `login.php` — Acceso al área privada
-- `backend.php` — Panel privado / gestión
-- `api.php` — Endpoints de la aplicación
-- `DriCloudAdapter.php` — Integración con DriCloud
-- `SmsProvider.php` — Servicio de SMS
-- `conexion_db.php` — Conexión con base de datos
-- `cambiar_pass.php` — Cambio de contraseña
-- `main.js` — JavaScript de la aplicación
-- `styles.css` — Estilos
-- `PHPMailer/` — Librería de correo
-- `img/` — Imágenes
+## How to start it for now
+```bash
+sudo /opt/lampp/xampp restart
 
-## Integraciones
+```
 
-- DriCloud
-- Servicio de correo electrónico
-- Servicio de SMS
+# Links:
 
-## Base de datos
+```
+[FRONTEND](http://localhost/onco-opinion/)[cite: 1]
+[BACKEND](http://localhost/onco-opinion/backend.php), it will redirect you to a login.[cite: 1]
 
-El proyecto utiliza MySQL.
+```
 
-Los archivos SQL incluidos corresponden al esquema/base de datos del proyecto.
+## Structure
 
-## Seguridad
+* `index.php` — Public landing page
 
-⚠️ No almacenar en Git:
 
-- Contraseñas
-- API keys
-- Tokens
-- Credenciales de bases de datos
-- Datos reales de pacientes
-- Documentación clínica
-- Logs con información sensible
+* `login.php` — Private area access
 
-## Desarrollo
 
-El proyecto se encuentra actualmente en fase de desarrollo.
+* `backend.php` — Private panel / management
 
-Antes de realizar cambios importantes:
+
+* `api.php` — Application endpoints
+
+
+* `DriCloudAdapter.php` — DriCloud integration
+
+
+* `SmsProvider.php` — SMS service
+
+
+* `conexion_db.php` — Database connection
+
+
+* `cambiar_pass.php` — Password change
+
+
+* `main.js` — Application JavaScript
+
+
+* `styles.css` — Styles
+
+
+* `PHPMailer/` — Mail library
+
+
+* `img/` — Images
+
+
+
+## Integrations
+
+* DriCloud
+
+
+* Email service
+
+
+* SMS service
+
+
+
+## Database
+
+The project uses MySQL.
+
+The included SQL files correspond to the project's schema/database.
+
+## Security
+
+⚠️ Do not store in Git:
+
+* Passwords
+
+
+* API keys
+
+
+* Tokens
+
+
+* Database credentials
+
+
+* Real patient data
+
+
+* Clinical documentation
+
+
+* Logs with sensitive information
+
+
+
+## Development
+
+The project is currently under development.
+
+Before making major changes:
 
 ```bash
 git status
 git add .
-git commit -m "Descripción del cambio"
+git commit -m "Description of the change"
+
+```
