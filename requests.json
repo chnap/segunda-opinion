@@ -1,0 +1,27 @@
+[
+    {
+        "id": "CASE-35F1A",
+        "fullName": "s",
+        "email": "s",
+        "phone": "s",
+        "patientType": "family",
+        "diagnosis": "s",
+        "reason": "s",
+        "question": "s",
+        "status": "DRICLOUD_PENDING",
+        "dricloud_sent": false,
+        "created_at": "2026-08-12 18:19:50",
+        "dricloud": {
+            "patientId": "DRC-12064",
+            "formUrl": "https:\/\/dricloud.example.com\/form\/CASE-35F1A"
+        },
+        "updatedAt": "2026-08-12 18:24:14",
+        "events": [
+            {
+                "type": "ACCEPTED_AND_SENT_TO_DRICLOUD",
+                "actor": "Dr. Juan De la Haba",
+                "at": "2026-08-12 18:24:14"
+            }
+        ]
+    }
+]
