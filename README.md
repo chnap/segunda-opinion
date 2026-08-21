@@ -1,19 +1,19 @@
 # Oncological Second Opinion Platform
 
-Web platform for managing oncological second opinion requests[cite: 1].
+Web platform for managing oncological second opinion requests.
 
 ## Project Status
 
-In development[cite: 1]
+In development
 
 ## Technologies
 
-- PHP[cite: 1]
-- JavaScript[cite: 1]
-- HTML / CSS[cite: 1]
-- MySQL[cite: 1]
-- PHPMailer[cite: 1]
-- DriCloud API[cite: 1]
+- PHP
+- JavaScript
+- HTML / CSS
+- MySQL
+- PHPMailer
+- DriCloud API
 
 ## How to start it for now
 ```bash
