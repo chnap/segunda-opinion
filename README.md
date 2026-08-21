@@ -1,6 +1,3 @@
-Aquí tienes la traducción completa y optimizada de tu `README.md` al inglés:
-
-```markdown
 # Oncological Second Opinion Platform
 
 Web platform for managing oncological second opinion requests[cite: 1].
@@ -26,11 +23,9 @@ sudo /opt/lampp/xampp restart
 
 # Links:
 
-```
-[FRONTEND](http://localhost/onco-opinion/)[cite: 1]
-[BACKEND](http://localhost/onco-opinion/backend.php), it will redirect you to a login.[cite: 1]
+[FRONTEND](http://localhost/onco-opinion/)
 
-```
+[BACKEND](http://localhost/onco-opinion/backend.php), it will redirect you to a login.
 
 ## Structure
 
