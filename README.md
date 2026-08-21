@@ -16,6 +16,7 @@ In development
 - DriCloud API
 
 ## How to start it for now
+- First introduce the files in a folder within `/opt/lampp/htdocs`
 ```bash
 sudo /opt/lampp/xampp restart
 
