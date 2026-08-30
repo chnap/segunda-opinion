@@ -181,14 +181,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function getMissingSummary(c) {
     if (!c || !c.checklist || !Array.isArray(c.checklist))
-      return '<span class="text-slate-500">Sin datos</span>';
+      return '<span class="missing-badge missing-badge--empty">Sin datos</span>';
     const missing = c.checklist.filter(
       (item) => item && item.status === "Pendiente",
     );
     if (missing.length === 0) {
-      return '<span class="text-slate-700 font-semibold inline-flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i> Expediente completo</span>';
+      return '<span class="missing-badge missing-badge--complete"><i data-lucide="check" class="w-3.5 h-3.5"></i> Completo</span>';
     }
-    return `<span class="text-slate-700 font-medium">Falta: ${missing.map((m) => m.name).join(", ")}</span>`;
+    const details = missing.map((item) => item.name).join("\n");
+    return `<span class="missing-badge missing-badge--pending" tabindex="0" aria-label="${missing.length} documentos pendientes. ${details}">
+      <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> ${missing.length} pendiente${missing.length === 1 ? "" : "s"}
+      <span class="missing-popover" role="tooltip"><strong>Documentación pendiente</strong><span>${missing.map((item) => item.name).join("<br>")}</span></span>
+    </span>`;
   }
 
   function getNextActionHTML(c) {
@@ -211,22 +215,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function getPriorityBadgeHTML(priority) {
     if (priority === "ALTA" || priority === "Urgente") {
-      return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-50 text-slate-700 border border-slate-200">ALTA</span>`;
+      return `<span class="soft-badge priority-badge priority-badge--urgent">URGENTE</span>`;
     }
-    return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">NORMAL</span>`;
+    return `<span class="soft-badge priority-badge priority-badge--normal">NORMAL</span>`;
   }
 
   function getStatusBadgeHTML(status) {
     switch (status) {
       case "REJECTED":
-        return `<span class="text-xs font-semibold text-slate-600">Denegado</span>`;
+        return `<span class="soft-badge status-badge status-badge--rejected">Denegado</span>`;
       case "NEW_REQUEST":
-        return `<span class="text-xs font-semibold text-slate-700">Nueva Solicitud</span>`;
+        return `<span class="soft-badge status-badge status-badge--new">Nueva Solicitud</span>`;
       case "ACCEPTED":
-        return `<span class="text-xs font-semibold text-slate-700">Aceptado</span>`;
+        return `<span class="soft-badge status-badge status-badge--accepted">Aceptado</span>`;
+      case "DOCUMENTATION_PENDING":
+        return `<span class="soft-badge status-badge status-badge--documentation">Falta Documentación</span>`;
       default:
-        return `<span class="text-xs font-semibold text-slate-700">En curso</span>`;
+        return `<span class="soft-badge status-badge status-badge--progress">En curso</span>`;
     }
+  }
+
+  function formatEventDate(value) {
+    if (!value) return "Fecha no disponible";
+    const date = new Date(String(value).replace(" ", "T"));
+    if (Number.isNaN(date.getTime())) return value;
+    return new Intl.DateTimeFormat("es-ES", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(date);
+  }
+
+  function getEventLabel(event) {
+    const labels = {
+      NEW_REQUEST: "Nueva solicitud recibida",
+      REQUEST_SUBMITTED: "Solicitud creada",
+      SOLICITUD_CREADA: "Solicitud creada",
+      DOCUMENTATION_UPDATED: "Documentación actualizada",
+      ACCEPTED: "Caso aceptado",
+      REJECTED: "Caso denegado",
+    };
+    return labels[event.type] || event.label || event.type || "Actividad registrada";
+  }
+
+  function getTimelineHTML(c) {
+    const events = Array.isArray(c.events) ? c.events : [];
+    if (!events.length) {
+      return `<section class="activity-panel" aria-labelledby="activityTitle"><div class="activity-heading"><span class="activity-kicker">Trazabilidad</span><h4 id="activityTitle">Historial de Actividad</h4></div><p class="activity-empty">Todavía no hay actividad registrada para este expediente.</p></section>`;
+    }
+    return `<section class="activity-panel" aria-labelledby="activityTitle">
+      <div class="activity-heading"><span class="activity-kicker">Trazabilidad</span><h4 id="activityTitle">Historial de Actividad</h4></div>
+      <ol class="activity-timeline">${events.map((event) => `<li class="activity-event"><span class="activity-dot" aria-hidden="true"></span><div><p class="activity-event-title">${getEventLabel(event)}</p><p class="activity-event-meta">${formatEventDate(event.at || event.created_at)}${event.actor ? ` · ${event.actor}` : ""}</p>${event.metadata ? `<p class="activity-event-detail">${event.metadata}</p>` : ""}</div></li>`).join("")}</ol>
+    </section>`;
   }
 
   function renderCases() {
@@ -419,6 +458,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     ${decisionSectionHTML}
                 </div>
             </div>
+            ${getTimelineHTML(c)}
         `;
 
     modal.classList.remove("opacity-0", "pointer-events-none");

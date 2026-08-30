@@ -219,6 +219,26 @@ try {
         }
     }
 
+    function recordCaseEvent($pdo, $caseId, $eventType, $actor = 'Dr. Juan De la Haba', $metadata = null) {
+        if (!$pdo || empty($caseId)) return;
+        try {
+            $stmt = $pdo->prepare("INSERT INTO case_events (case_id, event_type, actor, metadata) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$caseId, $eventType, $actor, $metadata ? json_encode($metadata, JSON_UNESCAPED_UNICODE) : null]);
+        } catch (\Throwable $e) {
+            // La instalación antigua puede no tener todavía la tabla de trazabilidad.
+        }
+    }
+
+    function normalizeCaseEvent($event) {
+        if (!is_array($event)) return null;
+        return [
+            'type' => $event['type'] ?? $event['event_type'] ?? 'ACTIVITY',
+            'at' => $event['at'] ?? $event['created_at'] ?? null,
+            'actor' => $event['actor'] ?? '',
+            'metadata' => is_array($event['metadata'] ?? null) ? implode(' · ', $event['metadata']) : ($event['metadata'] ?? '')
+        ];
+    }
+
     ob_clean();
 
     switch ($action) {
@@ -226,8 +246,40 @@ try {
         case 'getcases':
             $cases = [];
             if ($pdo) {
+                $eventsByCase = [];
+                try {
+                    $eventStmt = $pdo->query("SELECT case_id, event_type, actor, metadata, created_at FROM case_events ORDER BY created_at ASC, id ASC");
+                    while ($event = $eventStmt->fetch(PDO::FETCH_ASSOC)) {
+                        $eventsByCase[$event['case_id']][] = normalizeCaseEvent($event);
+                    }
+                } catch (\Throwable $e) {}
                 $stmt = $pdo->query("SELECT * FROM cases ORDER BY updated_at DESC");
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $caseEvents = [];
+                    $caseData = json_decode($row['case_data'] ?? '', true);
+                    if (!is_array($caseData)) $caseData = [];
+                    $storedChecklist = is_array($caseData['checklist'] ?? null) ? $caseData['checklist'] : [];
+                    $storedChecklistStatuses = [];
+                    foreach ($storedChecklist as $item) {
+                        if (!is_array($item) || empty($item['id'])) continue;
+                        $status = $item['status'] ?? '';
+                        $storedChecklistStatuses[$item['id']] = [
+                            'PRESENT' => 'Aportado',
+                            'MISSING' => 'Pendiente',
+                            'NOT_REQUIRED' => 'No requerida'
+                        ][$status] ?? $status;
+                    }
+                    if (!empty($caseData['events']) && is_array($caseData['events'])) {
+                        foreach ($caseData['events'] as $event) {
+                            $normalized = normalizeCaseEvent($event);
+                            if ($normalized) $caseEvents[] = $normalized;
+                        }
+                    }
+                    foreach ($eventsByCase[$row['id']] ?? [] as $event) $caseEvents[] = $event;
+                    if (empty($caseEvents) && !empty($row['created_at'])) {
+                        $caseEvents[] = ['type' => 'NEW_REQUEST', 'at' => $row['created_at'], 'actor' => 'Paciente (Web Pública)', 'metadata' => ''];
+                    }
+                    usort($caseEvents, static function ($a, $b) { return strcmp((string)($a['at'] ?? ''), (string)($b['at'] ?? '')); });
                     $cases[] = [
                         "id" => $row['id'],
                         "priority" => $row['priority'] ?? 'NORMAL',
@@ -237,14 +289,16 @@ try {
                         "pathology" => $row['diagnosis'],
                         "patientQuestion" => $row['clinical_question'],
                         "updatedAt" => $row['updated_at'],
-                        "rejectionReason" => $row['rejection_reason'] ?? '',
+                        "createdAt" => $row['created_at'] ?? null,
+                        "rejectionReason" => $row['rejection_reason'] ?? ($caseData['rejectionReason'] ?? ''),
+                        "events" => $caseEvents,
                         "checklist" => [
-                            ['id' => 'medical_report', 'name' => 'Diagnóstico', 'status' => 'Aportado'],
-                            ['id' => 'pathology', 'name' => 'Anatomía patológica', 'status' => 'Pendiente'],
-                            ['id' => 'imaging', 'name' => 'Pruebas de imagen', 'status' => 'Pendiente'],
-                            ['id' => 'treatments', 'name' => 'Tratamientos previos', 'status' => 'Pendiente'],
-                            ['id' => 'labs', 'name' => 'Analítica reciente', 'status' => 'Pendiente'],
-                            ['id' => 'patient_question', 'name' => 'Pregunta del paciente', 'status' => 'Aportado']
+                            ['id' => 'medical_report', 'name' => 'Diagnóstico', 'status' => $storedChecklistStatuses['medical_report'] ?? 'Aportado'],
+                            ['id' => 'pathology', 'name' => 'Anatomía patológica', 'status' => $storedChecklistStatuses['pathology'] ?? 'Pendiente'],
+                            ['id' => 'imaging', 'name' => 'Pruebas de imagen', 'status' => $storedChecklistStatuses['imaging'] ?? 'Pendiente'],
+                            ['id' => 'treatments', 'name' => 'Tratamientos previos', 'status' => $storedChecklistStatuses['treatments'] ?? 'Pendiente'],
+                            ['id' => 'labs', 'name' => 'Analítica reciente', 'status' => $storedChecklistStatuses['labs'] ?? 'Pendiente'],
+                            ['id' => 'patient_question', 'name' => 'Pregunta del paciente', 'status' => $storedChecklistStatuses['patient_question'] ?? 'Aportado']
                         ]
                     ];
                 }
@@ -270,6 +324,7 @@ try {
 
             $stmt = $pdo->prepare("INSERT INTO cases (id, patient_name, email, phone, status, diagnosis, clinical_question, case_data, priority, updated_at) VALUES (?, ?, ?, ?, 'NEW_REQUEST', ?, ?, ?, 'ALTA', ?)");
             $stmt->execute([$caseId, $fullName, $email, $phone, $diagnosis, $question, $caseDataJson, $updatedAt]);
+            recordCaseEvent($pdo, $caseId, 'NEW_REQUEST', 'Paciente (Web Pública)');
 
             if (!empty($email)) {
                 @sendReceivedEmail($email, $fullName);
@@ -293,6 +348,7 @@ try {
             if ($pdo && !empty($caseId)) {
                 $stmt = $pdo->prepare("UPDATE cases SET status = 'ACCEPTED', updated_at = NOW() WHERE id = ?");
                 $stmt->execute([$caseId]);
+                recordCaseEvent($pdo, $caseId, 'ACCEPTED');
 
                 $stmtEmail = $pdo->prepare("SELECT patient_name, email FROM cases WHERE id = ?");
                 $stmtEmail->execute([$caseId]);
@@ -308,14 +364,40 @@ try {
             $caseId = $input['caseId'] ?? '';
             $reason = $input['reason'] ?? 'No especificado';
             if ($pdo && !empty($caseId)) {
-                $stmt = $pdo->prepare("UPDATE cases SET status = 'REJECTED', rejection_reason = ?, updated_at = NOW() WHERE id = ?");
-                $stmt->execute([$reason, $caseId]);
+                $stmt = $pdo->prepare("SELECT case_data FROM cases WHERE id = ?");
+                $stmt->execute([$caseId]);
+                $caseRow = $stmt->fetch(PDO::FETCH_ASSOC);
+                $caseData = json_decode($caseRow['case_data'] ?? '{}', true);
+                if (!is_array($caseData)) $caseData = [];
+                $caseData['rejectionReason'] = $reason;
+                $stmt = $pdo->prepare("UPDATE cases SET status = 'REJECTED', case_data = ?, updated_at = NOW() WHERE id = ?");
+                $stmt->execute([json_encode($caseData, JSON_UNESCAPED_UNICODE), $caseId]);
+                recordCaseEvent($pdo, $caseId, 'REJECTED', 'Dr. Juan De la Haba', ['Motivo' => $reason]);
 
                 $stmtEmail = $pdo->prepare("SELECT patient_name, email FROM cases WHERE id = ?");
                 $stmtEmail->execute([$caseId]);
                 $patient = $stmtEmail->fetch(PDO::FETCH_ASSOC);
                 if ($patient && !empty($patient['email'])) {
                     @sendRejectionEmail($patient['email'], $patient['patient_name'], $reason);
+                }
+            }
+            echo json_encode(['ok' => true, 'success' => true]);
+            break;
+
+        case 'update_checklist':
+            $caseId = $input['caseId'] ?? '';
+            $checklist = is_array($input['checklist'] ?? null) ? $input['checklist'] : [];
+            if ($pdo && !empty($caseId)) {
+                $caseStmt = $pdo->prepare("SELECT case_data FROM cases WHERE id = ?");
+                $caseStmt->execute([$caseId]);
+                $caseRow = $caseStmt->fetch(PDO::FETCH_ASSOC);
+                if ($caseRow) {
+                    $caseData = json_decode($caseRow['case_data'] ?? '{}', true);
+                    if (!is_array($caseData)) $caseData = [];
+                    $caseData['checklist'] = $checklist;
+                    $stmt = $pdo->prepare("UPDATE cases SET case_data = ?, updated_at = NOW() WHERE id = ?");
+                    $stmt->execute([json_encode($caseData, JSON_UNESCAPED_UNICODE), $caseId]);
+                    recordCaseEvent($pdo, $caseId, 'DOCUMENTATION_UPDATED');
                 }
             }
             echo json_encode(['ok' => true, 'success' => true]);
