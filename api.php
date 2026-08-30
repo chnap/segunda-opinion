@@ -2,6 +2,7 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+session_start();
 ob_start();
 
 error_reporting(0);
@@ -219,14 +220,37 @@ try {
         }
     }
 
-    function recordCaseEvent($pdo, $caseId, $eventType, $actor = 'Dr. Juan De la Haba', $metadata = null) {
-        if (!$pdo || empty($caseId)) return;
+    function recordCaseEvent($pdo, $caseId, $eventType, $actor = null, $metadata = null) {
+        if (empty($actor)) {
+            $actor = $_SESSION['username'] ?? $_SESSION['user_email'] ?? 'Usuario del panel';
+        }
+        $event = [
+            'type' => $eventType,
+            'at' => date('Y-m-d H:i:s'),
+            'actor' => $actor,
+            'metadata' => is_array($metadata) ? implode(' · ', $metadata) : ($metadata ?? '')
+        ];
+        if (!$pdo || empty($caseId)) return $event;
         try {
             $stmt = $pdo->prepare("INSERT INTO case_events (case_id, event_type, actor, metadata) VALUES (?, ?, ?, ?)");
             $stmt->execute([$caseId, $eventType, $actor, $metadata ? json_encode($metadata, JSON_UNESCAPED_UNICODE) : null]);
         } catch (\Throwable $e) {
-            // La instalación antigua puede no tener todavía la tabla de trazabilidad.
+            try {
+                $caseStmt = $pdo->prepare("SELECT case_data FROM cases WHERE id = ?");
+                $caseStmt->execute([$caseId]);
+                $caseRow = $caseStmt->fetch(PDO::FETCH_ASSOC);
+                if ($caseRow) {
+                    $caseData = json_decode($caseRow['case_data'] ?? '{}', true);
+                    if (!is_array($caseData)) $caseData = [];
+                    $events = is_array($caseData['events'] ?? null) ? $caseData['events'] : [];
+                    $events[] = $event;
+                    $caseData['events'] = $events;
+                    $updateStmt = $pdo->prepare("UPDATE cases SET case_data = ?, updated_at = NOW() WHERE id = ?");
+                    $updateStmt->execute([json_encode($caseData, JSON_UNESCAPED_UNICODE), $caseId]);
+                }
+            } catch (\Throwable $fallbackError) {}
         }
+        return $event;
     }
 
     function normalizeCaseEvent($event) {
@@ -345,10 +369,11 @@ try {
 
         case 'accept_case':
             $caseId = $input['caseId'] ?? '';
+            $event = null;
             if ($pdo && !empty($caseId)) {
                 $stmt = $pdo->prepare("UPDATE cases SET status = 'ACCEPTED', updated_at = NOW() WHERE id = ?");
                 $stmt->execute([$caseId]);
-                recordCaseEvent($pdo, $caseId, 'ACCEPTED');
+                $event = recordCaseEvent($pdo, $caseId, 'ACCEPTED');
 
                 $stmtEmail = $pdo->prepare("SELECT patient_name, email FROM cases WHERE id = ?");
                 $stmtEmail->execute([$caseId]);
@@ -363,6 +388,7 @@ try {
         case 'reject_case':
             $caseId = $input['caseId'] ?? '';
             $reason = $input['reason'] ?? 'No especificado';
+            $event = null;
             if ($pdo && !empty($caseId)) {
                 $stmt = $pdo->prepare("SELECT case_data FROM cases WHERE id = ?");
                 $stmt->execute([$caseId]);
@@ -372,7 +398,7 @@ try {
                 $caseData['rejectionReason'] = $reason;
                 $stmt = $pdo->prepare("UPDATE cases SET status = 'REJECTED', case_data = ?, updated_at = NOW() WHERE id = ?");
                 $stmt->execute([json_encode($caseData, JSON_UNESCAPED_UNICODE), $caseId]);
-                recordCaseEvent($pdo, $caseId, 'REJECTED', 'Dr. Juan De la Haba', ['Motivo' => $reason]);
+                $event = recordCaseEvent($pdo, $caseId, 'REJECTED', null, ['Motivo' => $reason]);
 
                 $stmtEmail = $pdo->prepare("SELECT patient_name, email FROM cases WHERE id = ?");
                 $stmtEmail->execute([$caseId]);

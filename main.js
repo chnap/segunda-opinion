@@ -264,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return `<section class="activity-panel" aria-labelledby="activityTitle">
       <div class="activity-heading"><span class="activity-kicker">Trazabilidad</span><h4 id="activityTitle">Historial de Actividad</h4></div>
-      <ol class="activity-timeline">${events.map((event) => `<li class="activity-event"><span class="activity-dot" aria-hidden="true"></span><div><p class="activity-event-title">${getEventLabel(event)}</p><p class="activity-event-meta">${formatEventDate(event.at || event.created_at)}${event.actor ? ` · ${event.actor}` : ""}</p>${event.metadata ? `<p class="activity-event-detail">${event.metadata}</p>` : ""}</div></li>`).join("")}</ol>
+      <ol class="activity-timeline">${events.map((event) => `<li class="activity-event"><span class="activity-dot" aria-hidden="true"></span><div><p class="activity-event-title">${getEventLabel(event)}</p><p class="activity-event-meta">${formatEventDate(event.at || event.created_at)}${event.actor ? ` · Usuario: ${event.actor}` : ""}</p>${event.metadata ? `<p class="activity-event-detail">${event.metadata}</p>` : ""}</div></li>`).join("")}</ol>
     </section>`;
   }
 
@@ -516,18 +516,23 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCaseDecision(caseId, "REJECTED", reason);
   };
 
-  window.updateCaseDecision = function (caseId, newStatus, reason = "") {
+  window.updateCaseDecision = async function (caseId, newStatus, reason = "") {
     const c = cases.find((item) => item.id === caseId);
     if (c) {
       c.status = newStatus;
       if (reason) c.rejectionReason = reason;
 
       const endpoint = newStatus === "ACCEPTED" ? "accept_case" : "reject_case";
-      fetch(`api.php?action=${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ caseId, reason }),
-      }).catch(() => {});
+      try {
+        await fetch(`api.php?action=${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ caseId, reason }),
+        });
+        await loadCasesFromDB();
+      } catch (error) {
+        console.error("No se pudo actualizar el historial del caso:", error);
+      }
 
       showToast(
         newStatus === "ACCEPTED"
