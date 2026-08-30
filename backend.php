@@ -82,8 +82,8 @@ if (!isset($_SESSION['user_id'])) {
                 <button class="filter px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-xl border border-slate-200 text-slate-500 hover:border-slate-300 transition cursor-pointer" data-filter="REJECTED">Denegados</button>
             </div>
             <div class="relative min-w-[260px]">
-                <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                <input id="caseSearch" type="search" placeholder="Buscar por paciente o patología..." class="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-4 sm:pl-6 pr-4 text-xs font-medium text-slate-700 focus:outline-none focus:border-slate-300 transition shadow-inner">
+                <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none w-4 h-4 text-slate-400"></i>
+                <input id="caseSearch" type="search" placeholder="Buscar por paciente o patología..." class="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-10 sm:pl-11 pr-4 text-xs font-medium text-slate-700 focus:outline-none focus:border-slate-300 transition shadow-inner">
             </div>
         </div>
 

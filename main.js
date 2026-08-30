@@ -120,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let cases = [];
   let currentFilter = "ALL";
   let searchQuery = "";
+  let currentCaseId = null;
 
   const casesBody = document.getElementById("casesBody");
   const searchInput = document.getElementById("caseSearch");
@@ -280,6 +281,72 @@ document.addEventListener("DOMContentLoaded", () => {
     </section>`;
   }
 
+  function getCaseStatusText(status) {
+    const labels = {
+      NEW_REQUEST: "Nueva Solicitud",
+      DOCUMENTATION_PENDING: "Falta Documentación",
+      ACCEPTED: "Aceptado",
+      REJECTED: "Denegado",
+    };
+    return labels[status] || "En curso";
+  }
+
+  function getCaseContactText(c) {
+    let email = c.email || "";
+    let phone = c.phone || "";
+    if ((!email || !phone) && c.subtext) {
+      const parts = c.subtext.split("•").map((part) => part.trim());
+      email = email || parts.find((part) => part.includes("@")) || "";
+      phone = phone || parts.find((part) => part !== email) || "";
+    }
+    return `${phone || "No registrado"} | ${email || "No registrado"}`;
+  }
+
+  async function copyTextToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+    const helper = document.createElement("textarea");
+    helper.value = text;
+    helper.setAttribute("readonly", "");
+    helper.style.position = "fixed";
+    helper.style.opacity = "0";
+    document.body.appendChild(helper);
+    helper.select();
+    const copied = document.execCommand("copy");
+    helper.remove();
+    if (!copied) throw new Error("El navegador no permitió copiar el resumen.");
+  }
+
+  window.copyCaseSummary = async function (caseId) {
+    const c = cases.find((item) => item && item.id === caseId);
+    if (!c) return;
+    const missing = Array.isArray(c.checklist)
+      ? c.checklist.filter((item) => item && item.status === "Pendiente").map((item) => item.name)
+      : [];
+    const pathology = c.pathology || c.diagnosis || "Pendiente de diagnóstico";
+    const question = c.patientQuestion || c.clinical_question || "Sin consulta registrada";
+    const summary = [
+      "RESUMEN CLÍNICO — ONCO-OPINION",
+      "----------------------------------",
+      `PACIENTE: ${c.patient || c.patientName || "Sin nombre"}`,
+      `CONTACTO: ${getCaseContactText(c)}`,
+      `DIAGNÓSTICO: ${pathology}`,
+      `CONSULTA: ${question}`,
+      `DOCUMENTOS PENDIENTES: ${missing.length ? missing.join(", ") : "Ninguno"}`,
+      `ESTADO: ${getCaseStatusText(c.status)}`,
+      "----------------------------------",
+    ].join("\n");
+
+    try {
+      await copyTextToClipboard(summary);
+      showToast("Resumen copiado", "success");
+    } catch (error) {
+      showToast("No se pudo copiar el resumen", "error");
+    }
+  };
+
   function renderCases() {
     if (!casesBody) return;
 
@@ -324,6 +391,10 @@ document.addEventListener("DOMContentLoaded", () => {
           c.pathology || c.diagnosis || "Pendiente de diagnóstico";
         const caseId = c.id || "ONC-0000";
         const priority = c.priority || "NORMAL";
+        const priorityBorderClass =
+          priority === "ALTA" || priority === "Urgente"
+            ? "border-l-2 border-l-rose-300/80"
+            : "border-l-2 border-l-transparent";
 
         if (!Array.isArray(c.checklist)) {
           c.checklist = createChecklist(
@@ -333,11 +404,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         return `
-            <tr onclick="openCaseModal('${caseId}')" class="hover:bg-slate-50 transition-colors border-b border-slate-200 cursor-pointer group">
+            <tr onclick="openCaseModal('${caseId}')" class="${priorityBorderClass} hover:bg-slate-50 transition-colors border-b border-slate-200 cursor-pointer group">
                 <td class="py-4 px-6">${getPriorityBadgeHTML(priority)}</td>
                 <td class="py-4 px-6">
                     <div class="font-bold text-slate-900 group-hover:text-slate-500 transition-colors text-sm">${patientName}</div>
-                    <div class="text-[11px] text-slate-500">${c.subtext || ""}</div>
+                    <div class="text-[11px] text-slate-600">${c.subtext || ""}</div>
                 </td>
                 <td class="py-4 px-6 text-xs text-slate-800 max-w-xs truncate">${pathology}</td>
                 <td class="py-4 px-6">${getStatusBadgeHTML(c.status)}</td>
@@ -356,6 +427,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.openCaseModal = function (id) {
     const c = cases.find((item) => item && item.id === id);
     if (!c || !modal || !modalContent) return;
+    currentCaseId = id;
 
     if (!Array.isArray(c.checklist)) {
       c.checklist = createChecklist(
@@ -438,9 +510,14 @@ document.addEventListener("DOMContentLoaded", () => {
                             <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-1">Patología / Diagnóstico</span>
                             <p class="text-xs text-slate-800 font-medium">${pathology}</p>
                         </div>
-                        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-                            <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-1">Pregunta del Paciente</span>
-                            <p class="text-xs text-slate-800 font-medium">${question}</p>
+                        <div id="patientQuestionCard" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm transition-all duration-300">
+                            <div class="flex items-center justify-between gap-3 mb-1">
+                                <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Pregunta del Paciente</span>
+                                <button type="button" onclick="toggleQuestionFocus(event)" class="shrink-0 text-slate-400 hover:text-slate-700 transition cursor-pointer" aria-label="Ampliar pregunta del paciente">
+                                    <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-800 font-medium leading-relaxed">${question}</p>
                         </div>
                     </div>
 
@@ -473,6 +550,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             </div>
             ${getTimelineHTML(c)}
+            <div class="mt-4 flex justify-start">
+                <button type="button" onclick="copyCaseSummary('${c.id}')" class="bg-slate-50 hover:bg-slate-100 border border-slate-200/80 rounded-lg px-3 py-1.5 transition-all flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-slate-800 cursor-pointer">
+                    <i data-lucide="copy" class="w-3.5 h-3.5" stroke-width="1.5"></i>
+                    Copiar Resumen del Caso
+                </button>
+            </div>
         `;
 
     modal.classList.remove("opacity-0", "pointer-events-none");
@@ -483,6 +566,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (window.lucide) lucide.createIcons();
   };
+
+  window.toggleQuestionFocus = function (event) {
+    if (event) event.stopPropagation();
+    const card = document.getElementById("patientQuestionCard");
+    if (!card) return;
+    const isFocused = card.classList.toggle("fixed");
+    card.classList.toggle("inset-4", isFocused);
+    card.classList.toggle("z-[60]", isFocused);
+    card.classList.toggle("overflow-y-auto", isFocused);
+    card.classList.toggle("shadow-2xl", isFocused);
+    card.classList.toggle("p-6", isFocused);
+    card.classList.toggle("scale-[1.01]", isFocused);
+    const button = card.querySelector("button");
+    if (button) {
+      button.setAttribute("aria-label", isFocused ? "Cerrar lectura ampliada" : "Ampliar pregunta del paciente");
+      const icon = button.querySelector("[data-lucide]");
+      if (icon) icon.setAttribute("data-lucide", isFocused ? "minimize-2" : "maximize-2");
+      if (window.lucide) lucide.createIcons();
+    }
+  };
+
+  function navigateCase(step) {
+    if (!currentCaseId) return;
+    const activeCases = cases.filter((item) => item && item.status !== "REJECTED");
+    const currentIndex = activeCases.findIndex((item) => item.id === currentCaseId);
+    if (currentIndex === -1) return;
+    const nextIndex = currentIndex + step;
+    if (nextIndex < 0 || nextIndex >= activeCases.length) return;
+    openCaseModal(activeCases[nextIndex].id);
+  }
 
   window.closeModalHandler = function () {
     if (!modal) return;
@@ -603,6 +716,20 @@ document.addEventListener("DOMContentLoaded", () => {
         window.closeModalHandler();
       }
       return;
+    }
+
+    if (!isEditable && modal && !modal.classList.contains("pointer-events-none")) {
+      const key = e.key.toLowerCase();
+      if (e.key === "ArrowLeft" || key === "k") {
+        e.preventDefault();
+        navigateCase(-1);
+        return;
+      }
+      if (e.key === "ArrowRight" || key === "j") {
+        e.preventDefault();
+        navigateCase(1);
+        return;
+      }
     }
 
     if (!isEditable && /^[1-5]$/.test(e.key)) {
