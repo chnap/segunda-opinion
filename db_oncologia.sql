@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 30, 2026 at 10:41 AM
+-- Generation Time: Aug 30, 2026 at 05:12 PM
 -- Server version: 8.4.10-0ubuntu0.26.04.1
 -- PHP Version: 8.0.30
 
@@ -41,8 +41,8 @@ CREATE TABLE `backend_users` (
 --
 
 INSERT INTO `backend_users` (`id`, `username`, `email`, `password_hash`, `role`, `created_at`) VALUES
-(1, NULL, 'juanhaba@gmail.com', '$2y$10$C3rs0XC1BQleNRIqQ7viCu4rFTkXdfkU2.Z3D6ohhokY3LqJxOzxq', 'admin', '2026-08-11 20:00:32'),
-(2, 'admin', 'nachonon9@gmail.com', '$2y$12$M1ynBHz6Bh5h1qDObNWg.ef2.tfPJXZAr5ZOCmCxKaS/67feE32fK', 'admin', '2026-08-12 10:01:37');
+(1, 'juan', 'juanhaba@gmail.com', '$2y$10$wE9KxL2Z8vR1mN0pQ7yTz.u3J4K5L6M7N8O9P0Q1R2S3T4U5V6W7X', 'admin', '2026-08-11 20:00:32'),
+(2, 'nacho', 'nachonon9@gmail.com', '$2y$12$M1ynBHz6Bh5h1qDObNWg.ef2.tfPJXZAr5ZOCmCxKaS/67feE32fK', 'admin', '2026-08-12 10:01:37');
 
 -- --------------------------------------------------------
 
@@ -69,7 +69,6 @@ CREATE TABLE `cases` (
 --
 
 INSERT INTO `cases` (`id`, `patient_name`, `email`, `phone`, `status`, `diagnosis`, `clinical_question`, `created_at`, `updated_at`, `case_data`, `priority`) VALUES
-('ONC-8197', 's', 'iom01@lasallecordoba.es', 's', 'NEW_REQUEST', 's', 's', '2026-08-30 10:39:35', '2026-08-30 10:39:35', '{\"action\":\"submit_request\",\"fullName\":\"s\",\"email\":\"iom01@lasallecordoba.es\",\"phone\":\"s\",\"diagnosis\":\"s\",\"reason\":\"s\",\"question\":\"s\"}', 'ALTA'),
 ('ONCO-8005', 'Francisco Javier Blázquez', 'francisco.blazquez@example.com', '+34655667788', 'CLOSED', 'Adenocarcinoma gástrico estadio III', 'Evaluación de pauta perioperatoria FLOT.', '2026-07-29 20:17:03', '2026-08-08 20:17:03', '{\"id\":\"ONCO-8005\",\"patientName\":\"Francisco Javier Blázquez\",\"email\":\"francisco.blazquez@example.com\",\"phone\":\"+34655667788\",\"status\":\"CLOSED\",\"diagnosis\":\"Adenocarcinoma gástrico estadio III\",\"clinical_question\":\"Evaluación de pauta perioperatoria FLOT.\",\"createdAt\":\"2026-07-29T20:17:03+02:00\",\"updatedAt\":\"2026-08-08T20:17:03+02:00\",\"checklist\":{\"medicalReport\":\"PRESENT\",\"pathology\":\"PRESENT\",\"imaging\":\"PRESENT\",\"treatment\":\"PRESENT\",\"labs\":\"PRESENT\",\"genomics\":\"NOT_REQUIRED\",\"medication\":\"PRESENT\",\"clinical_question\":\"PRESENT\"},\"dricloud\":{\"formUrl\":\"https:\\/\\/app.dricloud.com\\/forms\\/ext\\/sec-op\\/demo-francisco-blazquez-3390\",\"patientId\":\"DC-5512\"},\"events\":[{\"type\":\"NEW_REQUEST\",\"at\":\"2026-07-29T20:17:03+02:00\",\"actor\":\"Paciente (Web Pública)\"},{\"type\":\"CLOSED\",\"at\":\"2026-08-08T20:17:03+02:00\",\"actor\":\"Dr. Juan De la Haba\"}]}', 'NORMAL'),
 ('ONCO-8010', 'Ana Belén Pastor', 'anabelen.pastor@example.com', '+34644556677', 'REPORT_DELIVERED', 'Linfoma Hodgkin clásico esclerosis nodular', 'Segunda opinión sobre esquema de quimioterapia ABVD vs escalado.', '2026-08-05 20:17:03', '2026-08-11 20:17:03', '{\"id\":\"ONCO-8010\",\"patientName\":\"Ana Belén Pastor\",\"email\":\"anabelen.pastor@example.com\",\"phone\":\"+34644556677\",\"status\":\"REPORT_DELIVERED\",\"diagnosis\":\"Linfoma Hodgkin clásico esclerosis nodular\",\"clinical_question\":\"Segunda opinión sobre esquema de quimioterapia ABVD vs escalado.\",\"createdAt\":\"2026-08-05T20:17:03+02:00\",\"updatedAt\":\"2026-08-11T20:17:03+02:00\",\"checklist\":{\"medicalReport\":\"PRESENT\",\"pathology\":\"PRESENT\",\"imaging\":\"PRESENT\",\"treatment\":\"PRESENT\",\"labs\":\"PRESENT\",\"genomics\":\"NOT_REQUIRED\",\"medication\":\"PRESENT\",\"clinical_question\":\"PRESENT\"},\"dricloud\":{\"formUrl\":\"https:\\/\\/app.dricloud.com\\/forms\\/ext\\/sec-op\\/demo-anabelen-pastor-5521\",\"patientId\":\"DC-6620\"},\"events\":[{\"type\":\"NEW_REQUEST\",\"at\":\"2026-08-05T20:17:03+02:00\",\"actor\":\"Paciente (Web Pública)\"},{\"type\":\"ACCEPTED\",\"at\":\"2026-08-06T20:17:03+02:00\",\"actor\":\"Dr. Juan De la Haba\"},{\"type\":\"REPORT_DELIVERED\",\"at\":\"2026-08-11T20:17:03+02:00\",\"actor\":\"Dr. Juan De la Haba\"}]}', 'NORMAL'),
 ('ONCO-8015', 'José Luis Navarro', 'joseluis.navarro@example.com', '+34633445566', 'READY_FOR_CONSULTATION', 'Carcinoma de próstata localizado de riesgo intermedio-alto', 'Comparativa entre braquiterapia y prostatectomía radical robótica con preservación neurovascular.', '2026-08-09 20:17:03', '2026-08-12 20:17:03', '{\"id\":\"ONCO-8015\",\"patientName\":\"José Luis Navarro\",\"email\":\"joseluis.navarro@example.com\",\"phone\":\"+34633445566\",\"status\":\"READY_FOR_CONSULTATION\",\"diagnosis\":\"Carcinoma de próstata localizado de riesgo intermedio-alto\",\"clinical_question\":\"Comparativa entre braquiterapia y prostatectomía radical robótica con preservación neurovascular.\",\"createdAt\":\"2026-08-09T20:17:03+02:00\",\"updatedAt\":\"2026-08-12T20:17:03+02:00\",\"checklist\":{\"medicalReport\":\"PRESENT\",\"pathology\":\"PRESENT\",\"imaging\":\"PRESENT\",\"treatment\":\"NOT_REQUIRED\",\"labs\":\"PRESENT\",\"genomics\":\"NOT_REQUIRED\",\"medication\":\"PRESENT\",\"clinical_question\":\"PRESENT\"},\"dricloud\":{\"formUrl\":\"https:\\/\\/app.dricloud.com\\/forms\\/ext\\/sec-op\\/demo-joseluis-navarro-1102\",\"patientId\":\"DC-7734\"},\"events\":[{\"type\":\"NEW_REQUEST\",\"at\":\"2026-08-09T20:17:03+02:00\",\"actor\":\"Paciente (Web Pública)\"},{\"type\":\"ACCEPTED\",\"at\":\"2026-08-10T20:17:03+02:00\",\"actor\":\"Dr. Juan De la Haba\"},{\"type\":\"DRICLOUD_RETURNED\",\"at\":\"2026-08-11T20:17:03+02:00\",\"actor\":\"DriCloud API\"},{\"type\":\"READY_FOR_CONSULTATION\",\"at\":\"2026-08-12T20:17:03+02:00\",\"actor\":\"Dr. Juan De la Haba\"}]}', 'NORMAL'),
@@ -211,7 +210,7 @@ ALTER TABLE `backend_users`
 -- AUTO_INCREMENT for table `case_events`
 --
 ALTER TABLE `case_events`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- Constraints for dumped tables
