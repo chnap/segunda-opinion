@@ -31,39 +31,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Login - Segunda Opinión Oncológica</title>
     
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+<script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        brand: { DEFAULT: '#1e40af', light: #3b82f6, dark: #f8fafc },
-                        accent: #f59e0b,
+                        brand: { DEFAULT: '#1e40af', light: '#3b82f6', dark: #f8fafc },
+                        accent: '#f59e0b',
                         lightBg: #f8fafc,
                         lightCard: #ffffff,
                         lightBorder: #eaeaea
-                    },
-                    fontFamily: { 
-                        serif: ['"Cormorant Garamond"', 'serif'], 
-                        sans: ['"Manrope"', 'sans-serif'] 
                     }
                 }
             }
         }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script defer src="https://unpkg.com/lucide@0.293.0"></script>
 </head>
-<body class="bg-lightBg text-slate-900 font-sans min-h-screen flex items-center justify-center overflow-hidden relative selection:bg-accent selection:text-lightBg antialiased m-0 p-0 relative overflow-x-hidden">
+<body class="bg-lightBg text-slate-900 font-sans min-h-screen flex items-center justify-center overflow-x-hidden relative selection:bg-accent selection:text-lightBg antialiased m-0 p-0 relative">
 
     <div class="absolute inset-0 opacity-20 pointer-events-none" id="bg-pattern">
         <div class="absolute w-full max-w-[500px] rounded-full blur-[120px] -top-20 -left-20 opacity-20 pointer-events-none"></div>
         <div class="absolute w-full max-w-[400px] rounded-full blur-[150px] bottom-10 right-10 opacity-30"></div>
     </div>
 
-    <div class="relative z-10 w-full max-w-md p-10 bg-lightCard/90 backdrop-blur-md border border-lightBorder rounded-xl shadow-xl">
+    <div class="relative z-10 w-full max-w-md p-10 bg-lightCard/90 backdrop-blur-md border border-lightBorder rounded-xl shadow-xl login-box opacity-100">
         <div class="text-center mb-10 stagger-el">
             <div class="w-16 h-16 bg-white text-slate-700 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 font-light shadow-lg">+</div>
             <span class="font-serif text-2xl tracking-wide font-bold text-slate-900 block mb-1">Dr. Juan De la Haba</span>
@@ -103,15 +101,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script>
         lucide.createIcons();
 
-        gsap.fromTo(".login-box", 
-            { y: 40, opacity: 0 },
-            { y: 0, opacity: 1, duration: 1, ease: "power4.out" }
-        );
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(".login-box", 
+                { y: 40, opacity: 0 },
+                { y: 0, opacity: 1, duration: 1, ease: "power4.out" }
+            );
 
-        gsap.fromTo(".stagger-el", 
-            { y: 20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, delay: 0.2, ease: "power3.out" }
-        );
+            gsap.fromTo(".stagger-el", 
+                { y: 20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, delay: 0.2, ease: "power3.out" }
+            );
+        }
 
         document.getElementById('login-form').addEventListener('submit', function() {
             const btn = this.querySelector('button');
