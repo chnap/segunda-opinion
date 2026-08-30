@@ -274,7 +274,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let filtered = cases.filter((c) => {
       if (!c) return false;
       let matchesFilter = true;
-      if (currentFilter === "URGENT")
+      if (c.status === "REJECTED") {
+        matchesFilter = currentFilter === "REJECTED";
+      } else if (currentFilter === "URGENT")
         matchesFilter = c.priority === "ALTA" || c.priority === "Urgente";
       else if (currentFilter === "PENDING_TRIAGE")
         matchesFilter = c.status === "NEW_REQUEST";
