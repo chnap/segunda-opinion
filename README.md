@@ -1,78 +1,119 @@
 # Oncological Second Opinion Platform
 
-Web platform for managing oncological second opinion requests.
+
+
+Web platform designed for managing oncological second opinion requests for Dr. Juan De la Haba Rodríguez’s clinical practice. The system allows patients to submit their cases in a structured manner and provides the specialist with a control panel for triage and tracking.
 
 ## Project Status
 
-In development
+
+
+In development.
 
 ## Technologies
 
-- PHP
-- JavaScript
-- HTML / CSS
-- MySQL
-- PHPMailer
-- DriCloud API
 
-## How to start it for now
-- First introduce the files in a folder within `/opt/lampp/htdocs`
+
+* PHP
+
+
+* JavaScript
+
+
+* HTML / CSS
+
+
+* MySQL
+
+
+* PHPMailer
+
+
+* DriCloud API
+
+
+* GSAP animations
+
+
+* PDO database connections
+
+
+
+## How to Start It for Now
+
+
+
+* First, introduce the files in a folder within `/opt/lampp/htdocs`.
+
+
+* Restart XAMPP using the terminal:
+
+
+
 ```bash
 sudo /opt/lampp/xampp restart
 
 ```
 
-# Links:
+## Links
 
-[FRONTEND](http://localhost/onco-opinion/)
 
-[BACKEND](http://localhost/onco-opinion/backend.php), it will redirect you to a login.
+
+* [FRONTEND](http://localhost/onco-opinion/)
+
+* [BACKEND](http://localhost/onco-opinion/backend.php), which will redirect you to a login.
+
+
 
 ## Structure
 
-* `index.php` — Public landing page
 
 
-* `login.php` — Private area access
+* `index.php` — Public landing page featuring an editorial design, specialized typography, smooth GSAP animations, and an interactive patient admission form.
 
 
-* `backend.php` — Private panel / management
+* `login.php` — Private area access and session-based PHP authentication screen for administrators.
 
 
-* `api.php` — Application endpoints
+* `backend.php` — Private panel and management interface to view, filter by priority or status, and handle clinical records.
 
 
-* `DriCloudAdapter.php` — DriCloud integration
+* `api.php` — Application endpoints and centralized controller managing system actions, request processing, demo resets, and automated email notifications.
 
 
-* `SmsProvider.php` — SMS service
+* `DriCloudAdapter.php` — Structured preliminary adapter for DriCloud API integration.
 
 
-* `conexion_db.php` — Database connection
+* `SmsProvider.php` — SMS service provider module.
 
 
-* `cambiar_pass.php` — Password change
+* `conexion_db.php` — Database connection module using PDO.
 
 
-* `main.js` — Application JavaScript
+* `cambiar_pass.php` — Utility script for generating secure hashes and configuring administrator users (`backend_users`).
 
 
-* `styles.css` — Styles
+* `main.js` — Client-side script handling panel interactivity, filters, modals, and documentation verification checklists.
 
 
-* `PHPMailer/` — Mail library
+* `styles.css` — Styles sheet for the application.
 
 
-* `img/` — Images
+* `PHPMailer/` — Mail library directory utilized for sending HTML templates compatible with light and dark mode.
+
+
+* `img/` — Images directory.
 
 
 
 ## Integrations
 
+
+
 * DriCloud
 
 
-* Email service
+* Email service (via PHPMailer)
 
 
 * SMS service
@@ -81,11 +122,18 @@ sudo /opt/lampp/xampp restart
 
 ## Database
 
-The project uses MySQL.
 
-The included SQL files correspond to the project's schema/database.
+
+* The project uses MySQL under the `db_oncologia` schema.
+
+
+* The included SQL files correspond to the project's schema/database.
+
+
 
 ## Security
+
+
 
 ⚠️ Do not store in Git:
 
@@ -109,17 +157,4 @@ The included SQL files correspond to the project's schema/database.
 
 * Logs with sensitive information
 
-
-
-## Development
-
-The project is currently under development.
-
-Before making major changes:
-
-```bash
-git status
-git add .
-git commit -m "Description of the change"
-
-```
+---
