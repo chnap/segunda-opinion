@@ -59,8 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body class="bg-lightBg text-slate-900 font-sans min-h-screen flex items-center justify-center overflow-hidden relative selection:bg-accent selection:text-lightBg antialiased m-0 p-0 relative overflow-x-hidden">
 
     <div class="absolute inset-0 opacity-20 pointer-events-none" id="bg-pattern">
-        <div class="absolute w-[500px] h-[500px] bg-[#1d5a66] rounded-full blur-[120px] -top-20 -left-20"></div>
-        <div class="absolute w-[400px] h-[400px] bg-[#c59d63] rounded-full blur-[150px] bottom-10 right-10 opacity-30"></div>
+        <div class="absolute w-full max-w-[500px] rounded-full blur-[120px] -top-20 -left-20 opacity-20 pointer-events-none"></div>
+        <div class="absolute w-full max-w-[400px] rounded-full blur-[150px] bottom-10 right-10 opacity-30"></div>
     </div>
 
     <div class="relative z-10 w-full max-w-md p-10 bg-lightCard/90 backdrop-blur-md border border-lightBorder rounded-xl shadow-xl">

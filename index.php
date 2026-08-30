@@ -101,7 +101,7 @@ declare(strict_types=1);
 <body class="bg-warmWhite text-darkText font-sans min-h-screen flex flex-col selection:bg-goldAccent/30 selection:text-darkTeal antialiased overflow-x-hidden relative">
 
     <!-- Efecto de luz ambiental superior -->
-    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-gradient-to-b from-goldAccent/10 via-deepTeal/5 to-transparent blur-3xl pointer-events-none -z-10"></div>
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-gradient-to-b from-goldAccent/10 via-deepTeal/5 to-transparent blur-3xl pointer-events-none -z-10"></div>
 
     <!-- HEADER MINIMALISTA & GLASSMORPHIC -->
     <header id="site-header" class="fixed w-full top-0 z-50 bg-warmWhite/80 backdrop-blur-xl border-b border-goldAccent/15 transition-all duration-500 shadow-sm">
@@ -261,7 +261,7 @@ declare(strict_types=1);
         <!-- QUÉ SE REVISA (DARK EDITORIAL SECTION) -->
         <section class="py-28 bg-darkTeal text-warmWhite relative overflow-hidden border-y border-goldAccent/20">
             <!-- Glow ambiental oscuro -->
-            <div class="absolute -right-20 top-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-deepTeal/40 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -right-20 top-1/2 -translate-y-1/2 w-full max-w-64 h-[600px] bg-deepTeal/40 rounded-full blur-3xl pointer-events-none"></div>
 
             <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 relative z-10 items-center">
                 <div class="space-y-8 reveal-fade-up">
@@ -487,7 +487,7 @@ declare(strict_types=1);
                         </div>
 
                         <div class="pt-6 border-t border-goldAccent/15 flex justify-end">
-                            <button type="submit" id="submitBtn" class="px-10 py-4 bg-deepTeal text-warmWhite text-xs uppercase tracking-widest hover:bg-darkTeal transition-all duration-400 focus:outline-none focus:ring-2 focus:ring-goldAccent/50 border border-goldAccent/40 hover:border-goldAccent shadow-lg min-w-[220px] flex items-center justify-center relative overflow-hidden group">
+                            <button type="submit" id="submitBtn" class="px-4 sm:px-6 py-4 bg-deepTeal text-warmWhite text-xs uppercase tracking-widest hover:bg-darkTeal transition-all duration-400 focus:outline-none focus:ring-2 focus:ring-goldAccent/50 border border-goldAccent/40 hover:border-goldAccent shadow-lg min-w-[220px] flex items-center justify-center relative overflow-hidden group">
                                 <span class="relative z-10">Enviar solicitud</span>
                                 <span class="absolute inset-0 bg-goldAccent/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
                             </button>

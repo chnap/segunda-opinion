@@ -24,11 +24,11 @@ if (!isset($_SESSION['user_id'])) {
             theme: {
                 extend: {
                     colors: {
-                        brand: { DEFAULT: '#1e40af', light: #3b82f6, dark: #f8fafc },
-                        accent: #f59e0b,
-                        lightBg: #f8fafc,
-                        lightCard: #ffffff,
-                        lightBorder: #eaeaea
+                        brand: { DEFAULT: '#1e40af', light: '#3b82f6', dark: '#f8fafc' },
+                        accent: '#f59e0b',
+                        lightBg: '#f8fafc',
+                        lightCard: '#ffffff',
+                        lightBorder: '#eaeaea'
                     },
                     fontFamily: { 
                         serif: ['"Cormorant Garamond"', 'serif'], 
@@ -45,11 +45,11 @@ if (!isset($_SESSION['user_id'])) {
 <body class="bg-lightBg text-slate-900 font-sans min-h-screen flex flex-col selection:bg-accent selection:text-lightBg antialiased m-0 p-0 relative overflow-x-hidden">
 
     <div class="fixed inset-0 opacity-15 pointer-events-none overflow-hidden z-0">
-        <div class="absolute w-[700px] h-[700px] bg-brand-light rounded-full blur-[200px] -top-40 -left-40"></div>
-        <div class="absolute w-[500px] h-[500px] bg-accent rounded-full blur-[220px] bottom-0 right-0 opacity-20"></div>
+        <div class="absolute w-full max-w-7xl rounded-full -top-40 -left-1/2 opacity-15 pointer-events-none"></div>
+        <div class="absolute w-full max-w-5xl rounded-full bottom-0 right-0 opacity-20"></div>
     </div>
 
-    <header class="bg-lightCard/80 backdrop-blur-xl border-b border-lightBorder/80 sticky top-0 z-40 shadow-2xl">
+    <header class="bg-lightCard/80 border-b border-lightBorder/80 sticky top-0 z-40 shadow-2xl">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <div class="w-11 h-11 bg-gradient-to-br from-slate-200 to-slate-300 text-slate-700 rounded-2xl flex items-center justify-center font-serif font-bold text-2xl shadow-lg ring-1 ring-slate-200/40">+</div>
@@ -73,7 +73,7 @@ if (!isset($_SESSION['user_id'])) {
 
     <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-6 relative z-10">
         
-        <div class="fade-in bg-lightCard/90 backdrop-blur-md p-4 rounded-[24px] border border-lightBorder shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div class="fade-in bg-lightCard/90 p-4 rounded-[24px] border border-lightBorder shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
             <div class="filters flex flex-wrap items-center gap-2">
                 <button class="filter active px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-xl border border-slate-200 bg-slate-50/10 text-slate-600 transition cursor-pointer" data-filter="ALL">Todos los Casos</button>
                 <button class="filter px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-xl border border-slate-200 text-slate-500 hover:border-slate-300 transition cursor-pointer" data-filter="URGENT">Urgentes / Prioritarios</button>
@@ -83,11 +83,11 @@ if (!isset($_SESSION['user_id'])) {
             </div>
             <div class="relative min-w-[260px]">
                 <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                <input id="caseSearch" type="search" placeholder="Buscar por paciente o patología..." class="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium text-slate-700 focus:outline-none focus:border-slate-300 transition shadow-inner">
+                <input id="caseSearch" type="search" placeholder="Buscar por paciente o patología..." class="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-4 sm:pl-6 pr-4 text-xs font-medium text-slate-700 focus:outline-none focus:border-slate-300 transition shadow-inner">
             </div>
         </div>
 
-<div class="fade-in bg-lightCard border lightBorder rounded-[28px] shadow-2xl overflow-hidden">
+        <div class="fade-in bg-lightCard border border-lightBorder rounded-[28px] shadow-2xl overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -98,15 +98,17 @@ if (!isset($_SESSION['user_id'])) {
                             <th class="py-5 px-6">Estado</th>
                             <th class="py-5 px-6">Qué Falta</th>
                             <th class="py-5 px-6 text-right">Próxima Acción</th>
-                        </thead>
-                        <tbody id="casesBody" class="divide-y divide-slate-200/60 text-sm text-slate-600">
+                        </tr>
+                    </thead>
+                    <tbody id="casesBody" class="divide-y divide-slate-200/60 text-sm text-slate-600">
+                    </tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <div class="modal-backdrop fixed inset-0 bg-lightBg/20 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300" id="caseModal">
-        <div class="modal bg-lightCard border lightBorder w-full max-w-4xl max-h-[90vh] rounded-[32px] shadow-2xl flex flex-col overflow-hidden scale-95 transition-transform duration-300">
+    <div class="modal-backdrop fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300" id="caseModal">
+        <div class="modal bg-lightCard border border-lightBorder w-full max-w-4xl max-h-[90vh] rounded-[32px] shadow-2xl flex flex-col overflow-hidden scale-95 transition-transform duration-300">
             <div class="p-6 border-b border-lightBorder flex items-center justify-between bg-slate-50">
                 <div class="flex items-center gap-4">
                     <div class="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center">
