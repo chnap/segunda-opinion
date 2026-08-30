@@ -124,6 +124,8 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </div>
 
-    <script src="main.js?v=2.1.0"></script>    
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none" aria-live="polite" aria-atomic="false"></div>
+
+    <script src="main.js?v=2.1.0"></script>
 </body>
 </html>

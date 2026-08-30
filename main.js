@@ -128,6 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalContent = document.getElementById("modalContent");
   const closeModal = document.getElementById("closeModal");
   const resetBtn = document.getElementById("resetDemo");
+  const toastContainer = document.getElementById("toastContainer");
 
   async function loadCasesFromDB() {
     try {
@@ -162,21 +163,32 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCases();
   }
 
-  function showToast(message) {
-    let toast = document.getElementById("toastNotification");
-    if (!toast) {
-      toast = document.createElement("div");
-      toast.id = "toastNotification";
-      toast.className =
-        "fixed bottom-5 right-5 bg-white text-slate-800 border border-slate-200 px-4 py-3 rounded-xl shadow-xl text-xs font-semibold backdrop-blur-md transition-all duration-300 transform translate-y-10 opacity-0 z-50 flex items-center gap-2";
-      document.body.appendChild(toast);
-    }
-    toast.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-slate-600"></i> ${message}`;
+  function showToast(message, type = "info") {
+    const container = toastContainer || document.body;
+    const toast = document.createElement("div");
+    const toastStyles = {
+      success: { icon: "check-circle-2", indicator: "border-l-slate-500" },
+      error: { icon: "alert-circle", indicator: "border-l-slate-700" },
+      info: { icon: "info", indicator: "border-l-slate-300" },
+    };
+    const style = toastStyles[type] || toastStyles.info;
+
+    toast.className = `pointer-events-auto flex items-center gap-2 rounded-xl border border-slate-200 border-l-2 ${style.indicator} bg-white/90 px-3.5 py-2.5 text-xs font-medium text-slate-700 shadow-sm backdrop-blur-md transition-all duration-200 ease-out translate-y-2 opacity-0`;
+    toast.setAttribute("role", type === "error" ? "alert" : "status");
+    toast.innerHTML = `<i data-lucide="${style.icon}" class="w-4 h-4 shrink-0 text-slate-500" stroke-width="1.5"></i><span>${message}</span>`;
+    container.appendChild(toast);
     if (window.lucide) lucide.createIcons();
-    toast.classList.remove("translate-y-10", "opacity-0");
+
+    requestAnimationFrame(() => {
+      toast.classList.remove("translate-y-2", "opacity-0");
+      toast.classList.add("translate-y-0", "opacity-100");
+    });
+
     setTimeout(() => {
-      toast.classList.add("translate-y-10", "opacity-0");
-    }, 3500);
+      toast.classList.remove("translate-y-0", "opacity-100");
+      toast.classList.add("translate-y-2", "opacity-0");
+      setTimeout(() => toast.remove(), 200);
+    }, 3000);
   }
 
   function getMissingSummary(c) {
@@ -540,6 +552,7 @@ document.addEventListener("DOMContentLoaded", () => {
         newStatus === "ACCEPTED"
           ? "Caso aceptado correctamente."
           : "Caso denegado correctamente.",
+        newStatus === "ACCEPTED" ? "success" : "error",
       );
       renderCases();
       openCaseModal(caseId);
@@ -562,9 +575,40 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target === modal) window.closeModalHandler();
     });
   document.addEventListener("keydown", (e) => {
+    const activeElement = document.activeElement;
+    const isEditable =
+      activeElement &&
+      (["INPUT", "TEXTAREA", "SELECT"].includes(activeElement.tagName) ||
+        activeElement.isContentEditable);
+
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      if (searchInput) {
+        searchInput.focus();
+      }
+      return;
+    }
+
+    if (e.key === "/" && !isEditable) {
+      e.preventDefault();
+      if (searchInput) {
+        searchInput.focus();
+      }
+      return;
+    }
+
     if (e.key === "Escape") {
-      if (typeof window.closeModalHandler === "function") {
+      const modalIsOpen = modal && !modal.classList.contains("pointer-events-none");
+      if (modalIsOpen && typeof window.closeModalHandler === "function") {
         window.closeModalHandler();
+      }
+      return;
+    }
+
+    if (!isEditable && /^[1-5]$/.test(e.key)) {
+      const filterButton = filterButtons[Number(e.key) - 1];
+      if (filterButton) {
+        filterButton.click();
       }
     }
   });
