@@ -71,17 +71,8 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </header>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-6 relative z-10 space-y-6">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-6 relative z-10">
         
-        <div class="fade-in bg-lightCard/90 backdrop-blur-md p-6 rounded-[28px] border border-lightBorder shadow-2xl relative overflow-hidden">
-            <div class="flex items-center gap-4 mb-4 relative z-10">
-                <h1 class="text-2xl md:text-3xl font-serif font-bold text-slate-900">Panel de Casos</h1>
-            </div>
-            <div class="shrink-0 relative z-10 flex items-center gap-3">
-                <input type="range" class="w-24 h-2 rounded-full bg-slate-200 appearance-none cursor-pointer" id="priorityFilter" aria-label="Filtrar por prioridad">
-            </div>
-        </div>
-
         <div class="fade-in bg-lightCard/90 backdrop-blur-md p-4 rounded-[24px] border border-lightBorder shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div class="filters flex flex-wrap items-center gap-2">
                 <button class="filter active px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-xl border border-slate-200 bg-slate-50/10 text-slate-600 transition cursor-pointer" data-filter="ALL">Todos los Casos</button>
