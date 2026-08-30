@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 18, 2026 at 07:21 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Aug 30, 2026 at 10:41 AM
+-- Server version: 8.4.10-0ubuntu0.26.04.1
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,10 +28,10 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `checklist` (
-  `id` int(11) NOT NULL,
-  `patient_id` int(11) DEFAULT NULL,
-  `documento` varchar(150) NOT NULL,
-  `completado` tinyint(1) DEFAULT 0
+  `id` int NOT NULL,
+  `patient_id` int DEFAULT NULL,
+  `documento` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
+  `completado` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -51,14 +51,14 @@ INSERT INTO `checklist` (`id`, `patient_id`, `documento`, `completado`) VALUES
 --
 
 CREATE TABLE `patients` (
-  `id` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `telefono` varchar(20) NOT NULL,
-  `dricloud_estado` varchar(50) DEFAULT 'Pendiente',
-  `porcentaje_checklist` int(11) DEFAULT 0,
-  `enlace_ficha` varchar(255) DEFAULT '#',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `id` int NOT NULL,
+  `nombre` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `telefono` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `dricloud_estado` varchar(50) COLLATE utf8mb4_general_ci DEFAULT 'Pendiente',
+  `porcentaje_checklist` int DEFAULT '0',
+  `enlace_ficha` varchar(255) COLLATE utf8mb4_general_ci DEFAULT '#',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -93,13 +93,13 @@ ALTER TABLE `patients`
 -- AUTO_INCREMENT for table `checklist`
 --
 ALTER TABLE `checklist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
